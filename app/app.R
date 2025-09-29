@@ -12,6 +12,7 @@ source(here("app/R/helper_functions.R"))
 
 source(here("app/modules/sidebar_module.R"))
 source(here("app/modules/input_display_module.R"))
+source(here("app/modules/selected_display_module.R"))
 
 source(here("app/ui.R"))
 source(here("app/server.R"))

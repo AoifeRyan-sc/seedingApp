@@ -51,11 +51,17 @@ format_df <- function(df){
   return(formatted_df)
 }
 
-select_data <- function(df, n_select, sort_by, exclude = NULL){
+select_data <- function(df, n_select, sort_by, exclude = NULL, exclude_on = NULL){
+  print(head(exclude))
   
-  if (exclude){
-    selected <- df %>%
-      dplyr::anti_join(select, by = "id")
+  selected <- df
+  
+  if (!is.null(exclude)){
+    print("antijoining")
+    selected <- selected %>%
+      dplyr::anti_join(exclude, by = exclude_on)
   }
+  
+  return(selected)
   
 }
