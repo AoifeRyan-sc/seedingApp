@@ -21,3 +21,5 @@ if(interactive()){
 } else {
   shiny::runApp(here::here("app"))
 }
+
+

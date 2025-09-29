@@ -4,9 +4,8 @@ format: html
 editor: visual
 ---
 
-
-
 read data
+
 ```{r}
 library(tidyverse)
 
@@ -15,8 +14,8 @@ data <- readxl::read_xlsx("sample_data/Maybelline Wondersnatch 15.09.25.xlsx") %
   format_dates()
 ```
 
-
 format dates function
+
 ```{r}
 # is there a chance this could be user_last_interaction depending on how data exported?
 format_dates <- function(df){
