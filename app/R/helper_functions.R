@@ -65,3 +65,43 @@ select_data <- function(df, n_select, sort_by, exclude = NULL, exclude_on = NULL
   return(selected)
   
 }
+
+find_uk <- function(df, country_col1, country_col2 = NULL){
+  
+  # need to add checks for cols
+  uk_df <- df %>%
+    dplyr::mutate(country = stringr::str_trim(country),
+                  country = tolower(country),
+                  city = stringr::str_trim(city),
+                  city = tolower(city)) %>%
+    dplyr::filter(country_2 == "UK",
+                  !country %in% ni_towns,
+                  !city %in% ni_towns,
+                  !grepl("ireland|isle of man", country))
+  
+  return(uk_df)
+  
+}
+
+make_barchart <- function(df){
+  # how to deal with status_columns???
+  status_col <- names(df)[grepl("status", names(df))]
+  status_ensym <- rlang::ensym(status_col)
+  stopifnot(length(status_col) == 1)
+
+  # better colours for chart
+  p <- df %>%
+    count(!!status_ensym) %>%
+    mutate(prop = n/sum(n)) %>%
+    ggplot2::ggplot(ggplot2::aes(x = !!status_ensym, y = prop, fill = !!status_ensym)) +
+    ggplot2::geom_col() +
+    ggplot2::labs(x = NULL, y = "Proportion of input dataset") +
+    ggplot2::geom_text(ggplot2::aes(label = n), vjust = -0.5) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      legend.position = "None"
+      )
+  
+  return(p)
+}

@@ -5,6 +5,8 @@ server <- function(input, output, session) {
   sidebarServer("sidebar_panel", r)
   inputDisplayServer("input_display_panel", r)
   selectedDisplayServer("select_display_panel", r)
+  statusInputDisplayServer("status_input_display_panel", r)
+  
   
   
   

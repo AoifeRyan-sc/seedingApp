@@ -13,9 +13,12 @@ source(here("app/R/helper_functions.R"))
 source(here("app/modules/sidebar_module.R"))
 source(here("app/modules/input_display_module.R"))
 source(here("app/modules/selected_display_module.R"))
+source(here("app/modules/status_prop_module.R"))
 
 source(here("app/ui.R"))
 source(here("app/server.R"))
+
+ni_towns <- readRDS(here("app/data/ni_towns.rds"))
 
 if(interactive()){
   shinyApp(ui, server)

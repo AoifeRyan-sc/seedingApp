@@ -2,7 +2,14 @@ sidebarUi <- function(id){
   ns <- shiny::NS(id)
   shiny::tagList(
     shiny::fileInput(ns("file_upload"), label = "Influencers to choose from", multiple = FALSE),
-    shiny::fileInput(ns("exclusions"), label = "Influencers to exclude", multiple = TRUE),
+    shiny::div( # I might want to make an orange halo for focus mode
+      class = "file-input-warning",
+      shiny::fileInput(
+        ns("exclusions"), 
+        label = shiny::HTML('<i class="fa fa-exclamation-triangle" <span style="color: #FFA500;"></i><span style="color: #FFA500;">Influencers to exclude</span>'),
+        multiple = TRUE
+        )
+    ),
     shiny::conditionalPanel(
       "output.exclusions_uploaded", ns = ns,
       select_input_with_tooltip(
@@ -38,7 +45,7 @@ sidebarServer <- function(id, r){
       })
     
     shiny::observeEvent(input$exclusions, {
-      r$exclude_df <- load_data(input$file_upload$exclusions)
+      r$exclude_df <- load_data(input$exclusions$datapath)
     })
     
     shiny::observeEvent(input$select_action, {

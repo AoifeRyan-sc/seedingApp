@@ -63,8 +63,59 @@ Thinking if these values are returned as a default and then the user can customi
 parse locations
 
 ```{r}
-find_locations <- function(df, country_col1, country_col2 = NULL){
+install.packages("WikipediR")
+library(WikipediR)
+
+# Get page content
+page_content <- page_content("en", "wikipedia", 
+                             page_name = "List of towns and villages in Northern Ireland")
+
+names(page_content)
+
+class(page_content$parse)
+
+names(page_content$parse)
+
+page_content$parse["title"]
   
+names(page_content$parse$text)
+
+names(page_content$parse$text[["*"]])
+text <- page_content$parse$text[["*"]]
+
+class(text)
+grepl("(?i)derry", text)
+parsed_text <- rvest::read_html(text)
+tables <- parsed_text %>% html_table(fill = TRUE)
+
+paragraphs <- parsed_text %>% html_nodes("p") %>% html_text()
+
+towns_ni_str <- paste(paragraphs[7:28], collapse = ", ")
+towns_ni_str <- stringr::str_remove_all(towns_ni_str, "\\\n")
+towns_ni_str <- tolower(towns_ni_str)
+towns_ni_list <- strsplit(towns_ni_str, split = ", ") 
+towns_ni_list %>% saveRDS("app/data/ni_towns.rds")
+```
+
+create function for locations
+```{r}
+ni_towns <- readRDS("app/data/ni_towns.rds")
+
+find_uk <- function(df, country_col1, country_col2 = NULL){
+  
+  # need to add checks for cols
+  uk_df <- df %>%
+    dplyr::mutate(country = stringr::str_trim(country),
+                  country = tolower(country),
+                  city = stringr::str_trim(city),
+                  city = tolower(city)) %>%
+    dplyr::filter(country_2 == "UK",
+                  !country %in% ni_towns,
+                  !city %in% ni_towns,
+                  !grepl("ireland|isle of man", country))
+  
+  return(uk_df)
+    
 }
 
 parse_locations <- function(df){
