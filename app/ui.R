@@ -3,7 +3,9 @@ ui <- bslib::page_sidebar(
     tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
   ),
   sidebar = bslib::sidebar(
-    sidebarUi("sidebar_panel")
+    sidebarUi("sidebar_panel"),
+    width = 500,
+    resizable = T
   ),
 
   # bslib::navset_underline(

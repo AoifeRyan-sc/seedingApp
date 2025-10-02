@@ -17,17 +17,10 @@ sidebarUi <- function(id){
         "Exclude users from the seeding based on presence in which column of the uploaded 'exclude dataframe? Note that 'id' and 'email' are the only truly unique columns so if you remove users based on their presence in any other column, e.g. 'nickname', you may remove users erroneously.", 
         choice_list = list(), select = NULL, multiple_selections = FALSE),
     ),
-    # shiny::h4("Proportion of statuses in seeding:"),
-    # shiny::numericInput(ns("star"), label = "Star", value = 0, max = 1),
-    # shiny::fluidRow(
-    #   shiny::column(3, div("Star:", style = "margin-top: 7px; font-weight: bold;")),
-    #   shiny::column(9, shiny::numericInput(ns("star"), label = NULL, value = 0, max = 1))
-    # ),
-    # inlinNumericInput(id = ns("star"), label = "Star", value = 0, max = 1),
-    # inlinNumericInput(id = ns("star"), label = "Star", value = 0, max = 1),
     shiny::uiOutput(ns("status_props")),
     shiny::numericInput(ns("n_choose"), value = 100, label = "How many influeners do you want to select?", updateOn = "blur"), # currently updates when enter button hit but maybe should be go button? 
-    select_input_with_tooltip(ns("select_cols"), "Choose by:", "Variable to sort values on. Do you want to select the top users by number of test? number of points?", choice_list = list(), select = NULL, multiple_selections = TRUE),
+    select_input_with_tooltip(ns("priority_col1"), "Priority 1:", "Variable to sort values on. Do you want to select the top users by number of test? number of points?", choice_list = list(), select = NULL, multiple_selections = TRUE),
+    select_input_with_tooltip(ns("priority_col2"), "Priority 2:", "A secondary variable to sort values on. This will be used to prioritise users where there is a tie between users in the first priority variable.", choice_list = list(), select = NULL, multiple_selections = TRUE),
     shiny::actionButton(ns("select_action"), "Complete Seeding", icon = shiny::icon("seedling"))
   )
   
@@ -38,7 +31,8 @@ sidebarServer <- function(id, r){
     ns <- session$ns
     
     shiny::observe({
-      shiny::updateSelectizeInput(session = session, "select_cols", choices = colnames(r$df), selected = "none")
+      shiny::updateSelectizeInput(session = session, "priority_col1", choices = colnames(r$df), selected = "none")
+      shiny::updateSelectizeInput(session = session, "priority_col2", choices = colnames(r$df), selected = "none")
       shiny::updateSelectizeInput(session = session, "antijoin_on", choices = colnames(r$df), selected = "none")
       shiny::updateNumericInput(session = session, "n_choose", max = nrow(r$df))
       # shiny::updateNumericInput(session = session, "star", value = r$input_status_props[["Star"]], max = 1)
@@ -53,8 +47,13 @@ sidebarServer <- function(id, r){
       ns <- shiny::NS(id)
       req(r$input_status_props)
       shiny::tagList(
-        lapply(names(r$input_status_props), function(x)
-             inlineNumericInput(id = ns(x), label = x, value = r$input_status_props[[x]], max = 1))
+        shiny::div(
+          style = "display: flex; align-items: flex-end; gap: 15px;",
+          lapply(names(r$input_status_props), function(x)
+              shiny::numericInput(ns(x), label = x, value = r$input_status_props[[x]], max = 1)
+
+          )
+        )
       )
     })
     
