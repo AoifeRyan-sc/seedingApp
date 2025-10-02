@@ -15,6 +15,18 @@
 - [ ] what happens if a password protected file is uploaded?
 - [ ] Lauren wants to only export Ids
 
+#### list sent to sophie ####
+  - [ ] Upload data for selection
+	- [ ] Upload data to exclude from selections
+	- [ ] Download data
+	- [ ] Filter by since last visit / interaction
+	- [ ] Proportion of statuses in input = proportion of statuses in input (and adjustability for this)
+	- [ ] Proportion control for other columns - e.g. 20% from Ireland, 80% from UK
+	- [ ] Rank by points
+	- [ ] Rank by tests completed
+	- [ ] Remove specific locations 
+	- [ ] Filter to specific values in columns e.g. only people who use a particular eyeshadow shade
+
 
 Notes:
 

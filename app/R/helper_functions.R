@@ -84,15 +84,19 @@ find_uk <- function(df, country_col1, country_col2 = NULL){
 }
 
 make_barchart <- function(df){
+  
+  print("2happeneingwdva
+        sg")
   # how to deal with status_columns???
   status_col <- names(df)[grepl("status", names(df))]
   status_ensym <- rlang::ensym(status_col)
   stopifnot(length(status_col) == 1)
+  
+  grouped_data <- df %>%
+    dplyr::count(!!status_ensym) %>%
+    dplyr::mutate(prop = n/sum(n))
 
-  # better colours for chart
-  p <- df %>%
-    count(!!status_ensym) %>%
-    mutate(prop = n/sum(n)) %>%
+  p <- grouped_data %>%
     ggplot2::ggplot(ggplot2::aes(x = !!status_ensym, y = prop, fill = !!status_ensym)) +
     ggplot2::geom_col() +
     ggplot2::labs(x = NULL, y = "Proportion of input dataset") +
@@ -102,6 +106,13 @@ make_barchart <- function(df){
       panel.grid = ggplot2::element_blank(),
       legend.position = "None"
       )
+
+  print("done")  
+  prop_info <- round(grouped_data$prop, 2)
+  names(prop_info) <- grouped_data$status # name status might change
   
-  return(p)
+  print(prop_info)
+  
+  return(list(plot = p, status_info = prop_info))
 }
+

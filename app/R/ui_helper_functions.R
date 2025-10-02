@@ -27,3 +27,10 @@ select_input_with_tooltip <- function(id, title, icon_info, choice_list = list()
     )
   )
 }
+
+inlineNumericInput <- function(id, label, value = 0, max = 1){
+  shiny::fluidRow(
+    shiny::column(3, div(label, style = "margin-top: 7px;")), # font-weight: bold;
+    shiny::column(9, shiny::numericInput(id, label = NULL, value = value, max = max))
+  )
+}

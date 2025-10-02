@@ -11,7 +11,11 @@ statusInputDisplayServer <- function(id, r){
     ns <- session$ns
 
     output$status_proportion_display <- shiny::renderPlot({
-      make_barchart(r$df)
+      req(r$df)
+      result <- make_barchart(r$df)
+      r$input_status_props <- result$status_info
+
+      result$p
     })
     
   })
