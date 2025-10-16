@@ -19,8 +19,8 @@ sidebarUi <- function(id){
     ),
     shiny::uiOutput(ns("status_props")),
     shiny::numericInput(ns("n_choose"), value = 100, label = "How many influeners do you want to select?", updateOn = "blur"), # currently updates when enter button hit but maybe should be go button? 
-    select_input_with_tooltip(ns("priority_col1"), "Priority 1:", "Variable to sort values on. Do you want to select the top users by number of test? number of points?", choice_list = list(), select = NULL, multiple_selections = TRUE),
-    select_input_with_tooltip(ns("priority_col2"), "Priority 2:", "A secondary variable to sort values on. This will be used to prioritise users where there is a tie between users in the first priority variable.", choice_list = list(), select = NULL, multiple_selections = TRUE),
+    select_input_with_tooltip(ns("priority_col1"), "Priority 1:", "Variable to sort values on. Do you want to select the top users by number of test? number of points?", choice_list = list(), select = NULL, multiple_selections = F), # could just use one with multiple selections?
+    select_input_with_tooltip(ns("priority_col2"), "Priority 2:", "A secondary variable to sort values on. This will be used to prioritise users where there is a tie between users in the first priority variable.", choice_list = list(), select = NULL, multiple_selections = F),
     shiny::actionButton(ns("select_action"), "Complete Seeding", icon = shiny::icon("seedling"))
   )
   
@@ -35,7 +35,6 @@ sidebarServer <- function(id, r){
       shiny::updateSelectizeInput(session = session, "priority_col2", choices = colnames(r$df), selected = "none")
       shiny::updateSelectizeInput(session = session, "antijoin_on", choices = colnames(r$df), selected = "none")
       shiny::updateNumericInput(session = session, "n_choose", max = nrow(r$df))
-      # shiny::updateNumericInput(session = session, "star", value = r$input_status_props[["Star"]], max = 1)
     })
     
     output$exclusions_uploaded <- shiny::reactive({
@@ -70,10 +69,10 @@ sidebarServer <- function(id, r){
       r$selected_data <- select_data(
         df = r$df,
         n_select = input$n_choose,
-        sort_by = input$select_cols,
-        # exclude = ifelse(r$exclude_df, r$exclude_df, NULL),
+        sort_by = c(input$priority_col1, input$priority_col2), # is this the best way to pass?
         exclude = r$exclude_df,
-        exclude_on = input$antijoin_on
+        exclude_on = input$antijoin_on,
+        prop_vec = c(input$Star, input$`Shooting Star`, input$`Rising Star`, input$Supernova)
       ) # add other metrics
     })
     

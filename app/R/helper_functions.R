@@ -1,3 +1,4 @@
+# data processing ----
 load_data <- function(file_path){
   
   ext <- tools::file_ext(file_path)
@@ -38,6 +39,8 @@ format_dates <- function(df){
   
 }
 
+# select data functions ----
+
 format_df <- function(df){
   formatted_df <- df %>%
     janitor::clean_names()
@@ -51,17 +54,48 @@ format_df <- function(df){
   return(formatted_df)
 }
 
-select_data <- function(df, n_select, sort_by, exclude = NULL, exclude_on = NULL){
+# n_named_vec is a named vector where the names are the relevant satuses and the value is the quantity to be selected from that status
+select_by_status <- function(df, n_named_vec, order_var, status_var){
+  
+  selected <- purrr::map_dfr(names(n_named_vec), function(x) {
+    df %>%
+      filter({{status_var}} == x) %>%
+      slice_max(n = n_named_vec[[x]], order_by = {{order_var}}, with_ties = F)
+  })
+  
+  return(selected)
+}
+
+select_data <- function(df, n_select, sort_by, prop_vec, exclude = NULL, exclude_on = NULL){
   print(head(exclude))
   
-  selected <- df
+  selected <- df %>%
+    dplyr::arrange(!!!rlang::syms(sort_vars))
+    # filter(nickname != 144298266) # jademclaire
   
   if (!is.null(exclude)){
     print("antijoining")
     selected <- selected %>%
       dplyr::anti_join(exclude, by = exclude_on)
+  } # should I do this before automating the status prop?
+  
+  n_select_by_status <- round(n_select*prop_vec)
+  rounding_error <-  n_select - n_select_by_status
+  
+  # could make this more sophisticated for special handling of rounding errors > 1 
+  if (rounding_error > 0){ 
+    n_select_by_status[tst2 == min(n_select_by_status)] <- min(n_select_by_status) + rounding_error
   }
   
+  if (rounding_error < 0){
+    n_select_by_status[n_select_by_status == max(n_select_by_status)] <- max(n_select_by_status) + rounding_error
+  }
+  
+  message("start select")
+  
+  selected <- select_by_status(selected, n_select_by_status, order_var = sort_by[1], status_var = status)
+  
+  message("finish select")
   return(selected)
   
 }
@@ -83,10 +117,9 @@ find_uk <- function(df, country_col1, country_col2 = NULL){
   
 }
 
+# general app functions ----
 make_barchart <- function(df){
-  
-  print("2happeneingwdva
-        sg")
+
   # how to deal with status_columns???
   status_col <- names(df)[grepl("status", names(df))]
   status_ensym <- rlang::ensym(status_col)
@@ -107,12 +140,26 @@ make_barchart <- function(df){
       legend.position = "None"
       )
 
-  print("done")  
   prop_info <- round(grouped_data$prop, 2)
   names(prop_info) <- grouped_data$status # name status might change
   
   print(prop_info)
   
   return(list(plot = p, status_info = prop_info))
+}
+
+datatable_display <- function(df){
+  DT::datatable(
+    df,
+    filter = "top",
+    # "pageLength": 5,
+    # extensions = c("Buttons"),
+    options = list(
+      select = list(maxOptions = 2000),
+      dom = 'Bfrtip',
+      buttons = c("copy", "csv", "excel", "pdf"),
+      pageLength = 5
+    )
+  )
 }
 

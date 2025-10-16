@@ -11,7 +11,7 @@ selectedDisplayServer <- function(id, r){
     ns <- session$ns
     
     output$select_data_display <- DT::renderDataTable({
-      DT::datatable(r$selected_data, filter = "top", options = list(select = list(maxOptions = 2000), dom = 'Bfrtip', buttons = c("copy", "csv", "excel", "pdf"), pageLength = 10))
+      datatable_display(r$selected_data)
     })
     
   })
